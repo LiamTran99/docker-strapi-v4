@@ -1,0 +1,39 @@
+version: '3'
+services:
+  cms:
+    build:
+        context: .
+        dockerfile: ./Dockerfile
+    environment:
+      DATABASE_CLIENT: mysql
+      DATABASE_HOST: db
+      DATABASE_PORT: 3306
+      DATABASE_NAME: strapi
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapi
+      DATABASE_SSL: 'false'
+    volumes:
+      - ./app:/srv/app
+      - /srv/app/node_modules
+      - /srv/app/dist
+      - /srv/app/.cache
+    ports:
+      - '1337:1337'
+    depends_on:
+      - db
+#    command: sh -c "yarn build && yarn develop"
+#    command: yarn start
+    command: yarn develop
+
+  db:
+    container_name: mysql
+    image: mysql:8.0.32
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: strapi
+      MYSQL_USER: strapi
+      MYSQL_PASSWORD: strapi
+      MYSQL_ROOT_PASSWORD: strapi
+    volumes:
+      - ./db:/var/lib/mysql
